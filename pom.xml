@@ -12,12 +12,32 @@
 
 	<build>
 		<plugins>
+			<!-- Compiler plugin -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<showDeprecation>true</showDeprecation>
+					<debug>true</debug>
+				</configuration>
+			</plugin>
+
+			<!-- Jar plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<archive>
+						<manifest>
+							<mainClass>edu.wlu.cs.levy.cg.KDTreeTest</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib</classpathPrefix>
+						</manifest>
+					</archive>
+					<outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -27,7 +47,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.13.2</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
