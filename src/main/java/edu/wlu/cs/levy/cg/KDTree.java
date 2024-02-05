@@ -1,5 +1,6 @@
 package edu.wlu.cs.levy.cg;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -39,15 +40,15 @@ import java.util.Stack;
  * @version %I%, %G%
  * @since JDK1.2
  */
-public class KDTree<T> {
+public class KDTree implements Serializable {
 	// number of milliseconds
-	final long m_timeout;
+	final long m_timeout = 0;
 
 	// K = number of dimensions
 	final private int m_K;
 
 	// root of KD-tree
-	private KDNode<T> m_root;
+	private KDNode<Object> m_root;
 
 	// count of nodes
 	private int m_count;
@@ -59,11 +60,6 @@ public class KDTree<T> {
 	 *            number of dimensions
 	 */
 	public KDTree(int k) {
-		this(k, 0);
-	}
-
-	public KDTree(int k, long timeout) {
-		this.m_timeout = timeout;
 		m_K = k;
 		m_root = null;
 	}
@@ -90,9 +86,9 @@ public class KDTree<T> {
 	 * @throws KeyDuplicateException
 	 *             if key already in tree
 	 */
-	public void insert(double[] key, T value) throws KeySizeException,
+	public void insert(double[] key, Object value) throws KeySizeException,
 			KeyDuplicateException {
-		this.edit(key, new Editor.Inserter<T>(value));
+		this.edit(key, new Editor.Inserter<Object>(value));
 	}
 
 	/**
@@ -109,7 +105,7 @@ public class KDTree<T> {
 	 *             if key already in tree
 	 */
 
-	public void edit(double[] key, Editor<T> editor) throws KeySizeException,
+	public void edit(double[] key, Editor<Object> editor) throws KeySizeException,
 			KeyDuplicateException {
 
 		if (key.length != m_K) {
@@ -140,13 +136,13 @@ public class KDTree<T> {
 	 * @throws KeySizeException
 	 *             if key.length mismatches K
 	 */
-	public T search(double[] key) throws KeySizeException {
+	public Object search(double[] key) throws KeySizeException {
 
 		if (key.length != m_K) {
 			throw new KeySizeException();
 		}
 
-		KDNode<T> kd = KDNode.srch(new HPoint(key), m_root, m_K);
+		KDNode<Object> kd = KDNode.srch(new HPoint(key), m_root, m_K);
 
 		return (kd == null ? null : kd.v);
 	}
@@ -177,7 +173,7 @@ public class KDTree<T> {
 		if (key.length != m_K) {
 			throw new KeySizeException();
 		}
-		KDNode<T> t = KDNode.srch(new HPoint(key), m_root, m_K);
+		KDNode<Object> t = KDNode.srch(new HPoint(key), m_root, m_K);
 		if (t == null) {
 			if (optional == false) {
 				throw new KeyMissingException();
@@ -200,7 +196,7 @@ public class KDTree<T> {
 	 * @throws KeySizeException
 	 *             if key.length mismatches K
 	 */
-	public T nearest(double[] key) throws KeySizeException {
+	public Object nearest(double[] key) throws KeySizeException {
 		return nearest(key, 1, null).get(0);
 	}
 
@@ -217,7 +213,7 @@ public class KDTree<T> {
 	 * @throws KeySizeException
 	 *             if key.length mismatches K
 	 */
-	public List<T> nearest(double[] key, int n) throws KeySizeException,
+	public List<Object> nearest(double[] key, int n) throws KeySizeException,
 			IllegalArgumentException {
 		return nearest(key, n, null);
 	}
@@ -241,20 +237,20 @@ public class KDTree<T> {
 	 * @throws IllegalArgumentException
 	 *             if <I>n</I> is negative or exceeds tree size
 	 */
-	public List<T> nearest(double[] key, int n, Checker<T> checker)
+	public List<Object> nearest(double[] key, int n, Checker<Object> checker)
 			throws KeySizeException, IllegalArgumentException {
 
 		if (n <= 0) {
-			return new LinkedList<T>();
+			return new LinkedList<Object>();
 		}
 
-		NearestNeighborList<KDNode<T>> nnl = getNeighbors(key, n, checker);
+		NearestNeighborList<KDNode<Object>> nnl = getNeighbors(key, n, checker);
 
 		n = nnl.getSize();
-		Stack<T> nbrs = new Stack<T>();
+		Stack<Object> nbrs = new Stack<Object>();
 
 		for (int i = 0; i < n; ++i) {
-			KDNode<T> kd = nnl.removeHighest();
+			KDNode<Object> kd = nnl.removeHighest();
 			nbrs.push(kd.v);
 		}
 
@@ -275,7 +271,7 @@ public class KDTree<T> {
 	 * @throws KeySizeException
 	 *             on mismatch among lowk.length, uppk.length, or K
 	 */
-	public List<T> range(double[] lowk, double[] uppk) throws KeySizeException {
+	public List<Object> range(double[] lowk, double[] uppk) throws KeySizeException {
 
 		if (lowk.length != uppk.length) {
 			throw new KeySizeException();
@@ -286,11 +282,11 @@ public class KDTree<T> {
 		}
 
 		else {
-			List<KDNode<T>> found = new LinkedList<KDNode<T>>();
+			List<KDNode<Object>> found = new LinkedList<KDNode<Object>>();
 			KDNode.rsearch(new HPoint(lowk), new HPoint(uppk), m_root, 0, m_K,
 					found);
-			List<T> o = new LinkedList<T>();
-			for (KDNode<T> node : found) {
+			List<Object> o = new LinkedList<Object>();
+			for (KDNode<Object> node : found) {
 				o.add(node.v);
 			}
 			return o;
@@ -301,19 +297,19 @@ public class KDTree<T> {
 		return m_count;
 	}
 
-	private NearestNeighborList<KDNode<T>> getNeighbors(double[] key)
+	private NearestNeighborList<KDNode<Object>> getNeighbors(double[] key)
 			throws KeySizeException {
 		return getNeighbors(key, m_count, null);
 	}
 
-	private NearestNeighborList<KDNode<T>> getNeighbors(double[] key, int n,
-			Checker<T> checker) throws KeySizeException {
+	private NearestNeighborList<KDNode<Object>> getNeighbors(double[] key, int n,
+			Checker<Object> checker) throws KeySizeException {
 
 		if (key.length != m_K) {
 			throw new KeySizeException();
 		}
 
-		NearestNeighborList<KDNode<T>> nnl = new NearestNeighborList<KDNode<T>>(
+		NearestNeighborList<KDNode<Object>> nnl = new NearestNeighborList<KDNode<Object>>(
 				n);
 
 		// initial call is with infinite hyper-rectangle and max distance
@@ -347,15 +343,15 @@ public class KDTree<T> {
 	 * @throws KeySizeException
 	 *             if key.length mismatches K
 	 */
-	public List<T> nearestDistance(double[] key, double dist,
+	public List<Object> nearestDistance(double[] key, double dist,
 			DistanceMetric metric) throws KeySizeException {
 
-		NearestNeighborList<KDNode<T>> nearestNeighborList = getNeighbors(key);
+		NearestNeighborList<KDNode<Object>> nearestNeighborList = getNeighbors(key);
 		int n = nearestNeighborList.getSize();
-		Stack<T> neighbors = new Stack<T>();
+		Stack<Object> neighbors = new Stack<Object>();
 
 		for (int i = 0; i < n; ++i) {
-			KDNode<T> kd = nearestNeighborList.removeHighest();
+			KDNode<Object> kd = nearestNeighborList.removeHighest();
 			if (metric.distance(kd.k.coord, key) < dist) {
 				neighbors.push(kd.v);
 			}

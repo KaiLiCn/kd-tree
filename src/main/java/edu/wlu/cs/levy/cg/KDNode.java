@@ -1,10 +1,11 @@
 package edu.wlu.cs.levy.cg;
 
+import java.io.Serializable;
 import java.util.List;
 
 // K-D Tree node class
 
-class KDNode<T> {
+class KDNode<T> implements Serializable {
 
 	// these are seen by KDTree
 	protected HPoint k;
@@ -19,16 +20,17 @@ class KDNode<T> {
 		int next_lev = (lev + 1) % K;
 		synchronized (t) {
 			if (key.equals(t.k)) {
-				boolean was_deleted = t.deleted;
-				t.v = editor.edit(t.deleted ? null : t.v);
-				t.deleted = (t.v == null);
-
-				if (t.deleted == was_deleted) {
-					return 0;
-				} else if (was_deleted) {
-					return -1;
-				}
-				return 1;
+				return 0;
+//				boolean was_deleted = t.deleted;
+//				t.v = editor.edit(t.deleted ? null : t.v);
+//				t.deleted = (t.v == null);
+//
+//				if (t.deleted == was_deleted) {
+//					return 0;
+//				} else if (was_deleted) {
+//					return -1;
+//				}
+//				return 1;
 			} else if (key.coord[lev] > t.k.coord[lev]) {
 				next_node = t.right;
 				if (next_node == null) {

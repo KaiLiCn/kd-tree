@@ -2,7 +2,9 @@
 
 package edu.wlu.cs.levy.cg;
 
-class HRect {
+import java.io.Serializable;
+
+class HRect implements Serializable {
 
 	protected HPoint min;
 	protected HPoint max;

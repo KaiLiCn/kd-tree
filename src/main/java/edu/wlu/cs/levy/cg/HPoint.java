@@ -2,7 +2,9 @@
 
 package edu.wlu.cs.levy.cg;
 
-class HPoint {
+import java.io.Serializable;
+
+class HPoint implements Serializable {
 
 	protected double[] coord;
 
